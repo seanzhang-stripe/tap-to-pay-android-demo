@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.taptopayandroid"
-        minSdk 21
-        targetSdk 33
+        minSdk 26
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -52,10 +52,10 @@ android {
 
 
 ext {
-    androidx_lifecycle_version = '2.5.1'
-    kotlin_coroutines_version = '1.6.4'
-    okhttp_version = '4.10.0'
-    retrofit_version = '2.9.0'
+    androidx_lifecycle_version = '2.8.7'
+    kotlin_coroutines_version = '1.9.0'
+    okhttp_version = '4.12.0'
+    retrofit_version = '2.11.0'
     stripeTerminalVersion = "2.17.1"
 }
 
@@ -63,10 +63,10 @@ dependencies {
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    implementation "com.google.android.material:material:1.6.1"
-    implementation "androidx.appcompat:appcompat:1.5.1"
-    implementation "androidx.core:core-ktx:1.9.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "com.google.android.material:material:1.12.0"
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "androidx.core:core-ktx:1.15.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.2.0"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
@@ -74,7 +74,7 @@ dependencies {
     // We are using Kotlin, and not Java 8, so do not use the recommended Java 8 library
     //noinspection LifecycleAnnotationProcessorWithJava8
     kapt "androidx.lifecycle:lifecycle-compiler:$androidx_lifecycle_version"
-    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
@@ -88,9 +88,9 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
     // Stripe Terminal library
-    implementation "com.stripe:stripeterminal-localmobile:2.20.0"
-    implementation "com.stripe:stripeterminal-core:2.20.0"
+    implementation "com.stripe:stripeterminal-taptopay:4.1.0"
+    implementation "com.stripe:stripeterminal-core:4.1.0"
 
     // Leak canary
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.9.1"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.14"
 }
