@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -207,7 +208,7 @@ class MainActivity : AppCompatActivity(), NavigationListener {
     private val collectPaymentMethodCallback by lazy {
         object : PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
-                Terminal.getInstance().processPayment(paymentIntent, processPaymentCallback)
+                Terminal.getInstance().confirmPaymentIntent(paymentIntent, processPaymentCallback)
             }
 
             override fun onFailure(e: TerminalException) {
@@ -219,10 +220,12 @@ class MainActivity : AppCompatActivity(), NavigationListener {
     private val processPaymentCallback by lazy {
         object : PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
-                ApiClient.capturePaymentIntent(paymentIntent.id)
+                paymentIntent.id?.let {
+                    ApiClient.capturePaymentIntent(it)
+                    //TODO : Return to previous Screen
+                    navigateTo(PaymentDetails.TAG, PaymentDetails(), true)
+                }
 
-                //TODO : Return to previous Screen
-                navigateTo(PaymentDetails.TAG, PaymentDetails(), true)
             }
 
             override fun onFailure(e: TerminalException) {
@@ -240,25 +243,24 @@ class MainActivity : AppCompatActivity(), NavigationListener {
         )
     }
 
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun connectReader(){
-        val config = DiscoveryConfiguration(
-            timeout = 0,
-            discoveryMethod = DiscoveryMethod.LOCAL_MOBILE,
-            isSimulated = false,
-            location = mutableListState.value.locations[0].id
+        val dicoveryConfig = DiscoveryConfiguration.TapToPayDiscoveryConfiguration(
+            isSimulated = false
         )
-
-        Terminal.getInstance().discoverReaders(config, discoveryListener = object :
+        Terminal.getInstance().discoverReaders(dicoveryConfig, discoveryListener = object :
             DiscoveryListener {
             override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
                 readers.filter { it.networkStatus != Reader.NetworkStatus.OFFLINE }
-                var reader = readers[0]
+                val reader = readers[0]
+                val connectionConfig = ConnectionConfiguration.TapToPayConnectionConfiguration(
+                    locationId = "${mutableListState.value.locations[0].id}",
+                    tapToPayReaderListener = null
+                )
 
-                val config = ConnectionConfiguration.LocalMobileConnectionConfiguration("${mutableListState.value.locations[0].id}")
-
-                Terminal.getInstance().connectLocalMobileReader(
-                    reader,
-                    config,
+                Terminal.getInstance().connectReader(
+                    reader = reader,
+                    config = connectionConfig,
                     object: ReaderCallback {
                         override fun onFailure(e: TerminalException) {
                             e.printStackTrace()
@@ -315,6 +317,7 @@ class MainActivity : AppCompatActivity(), NavigationListener {
             .commitAllowingStateLoss()
     }
 
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onConnectReader(){
         connectReader()
     }

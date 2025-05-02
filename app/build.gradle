@@ -33,6 +33,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 
     lint {
         disable "IconLauncherShape"
@@ -88,8 +91,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
     // Stripe Terminal library
-    implementation "com.stripe:stripeterminal-taptopay:4.1.0"
-    implementation "com.stripe:stripeterminal-core:4.1.0"
+    implementation "com.stripe:stripeterminal-taptopay:4.3.1"
+    implementation "com.stripe:stripeterminal-core:4.3.1"
 
     // Leak canary
     debugImplementation "com.squareup.leakcanary:leakcanary-android:2.14"
